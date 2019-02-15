@@ -40,7 +40,7 @@
                     :is-draggable="draggable"
                     :is-resizable="resizable"
                     :is-mirrored="mirrored"
-                    :vertical-compact="true"
+                    :vertical-compact="false"
                     :use-css-transforms="true"
                     :responsive="responsive"
             >
