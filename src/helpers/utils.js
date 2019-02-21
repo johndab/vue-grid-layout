@@ -60,13 +60,12 @@ export function cloneLayoutItem(layoutItem: LayoutItem): LayoutItem {
  * @return {Boolean}   True if colliding.
  */
 export function collides(l1: LayoutItem, l2: LayoutItem): boolean {
-  return false;
-  // if (l1 === l2) return false; // same element
-  // if (l1.x + l1.w <= l2.x) return false; // l1 is left of l2
-  // if (l1.x >= l2.x + l2.w) return false; // l1 is right of l2
-  // if (l1.y + l1.h <= l2.y) return false; // l1 is above l2
-  // if (l1.y >= l2.y + l2.h) return false; // l1 is below l2
-  // return true; // boxes overlap
+  if (l1 === l2) return false; // same element
+  if (l1.x + l1.w <= l2.x) return false; // l1 is left of l2
+  if (l1.x >= l2.x + l2.w) return false; // l1 is right of l2
+  if (l1.y + l1.h <= l2.y) return false; // l1 is above l2
+  if (l1.y >= l2.y + l2.h) return false; // l1 is below l2
+  return true; // boxes overlap
 }
 
 /**
@@ -78,7 +77,7 @@ export function collides(l1: LayoutItem, l2: LayoutItem): boolean {
  *   vertically.
  * @return {Array}       Compacted Layout.
  */
-export function compact(layout: Layout, verticalCompact: Boolean): Layout {
+export function compact(layout: Layout, verticalCompact: Boolean, collide: Boolean): Layout {
     // Statics go in the compareWith array right away so items flow around them.
   const compareWith = getStatics(layout);
   // We go through the items by row and column.
@@ -90,7 +89,7 @@ export function compact(layout: Layout, verticalCompact: Boolean): Layout {
     let l = sorted[i];
 
     // Don't move static elements
-    if (!l.static) {
+    if (!l.static && collide) {
       l = compactItem(compareWith, l, verticalCompact);
 
       // Add to comparison array. We only collide with items before this one.
@@ -207,7 +206,7 @@ export function getStatics(layout: Layout): Array<LayoutItem> {
  * @param  {Boolean}    [isUserAction] If true, designates that the item we're moving is
  *                                     being dragged/resized by th euser.
  */
-export function moveElement(layout: Layout, l: LayoutItem, x: Number, y: Number, isUserAction: Boolean): Layout {
+export function moveElement(layout: Layout, l: LayoutItem, x: Number, y: Number, isUserAction: Boolean, collide: Boolean): Layout {
   if (l.static) return layout;
 
   // Short-circuit if nothing to do.
@@ -218,6 +217,7 @@ export function moveElement(layout: Layout, l: LayoutItem, x: Number, y: Number,
   if (typeof x === 'number') l.x = x;
   if (typeof y === 'number') l.y = y;
   l.moved = true;
+  if(!collide) return layout; 
 
   // If this collides with anything, move it.
   // When doing this comparison, we have to sort the items we compare with
@@ -261,7 +261,6 @@ export function moveElement(layout: Layout, l: LayoutItem, x: Number, y: Number,
  */
 export function moveElementAwayFromCollision(layout: Layout, collidesWith: LayoutItem,
                                              itemToMove: LayoutItem, isUserAction: ?boolean): Layout {
-
   // If there is enough space above the collision to put this element, move it there.
   // We only do this on the main collision as this can get funky in cascades and cause
   // unwanted swapping behavior.

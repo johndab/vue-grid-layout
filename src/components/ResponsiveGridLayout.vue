@@ -64,6 +64,10 @@
                 type: Boolean,
                 default: true
             },
+            collisions: {
+                type: Boolean,
+                default: true,
+            },
             isResizable: {
                 type: Boolean,
                 default: true
@@ -133,7 +137,7 @@
                         //self.width = self.$el.offsetWidth;
                         addWindowEventListener('resize', self.onWindowResize);
                     }
-                    compact(self.layout, self.verticalCompact);
+                    compact(self.layout, self.verticalCompact, self.collisions);
 
                     self.updateHeight();
                     self.$nextTick(function () {
@@ -182,7 +186,7 @@
                     //self.width = self.$el.offsetWidth;
                     addWindowEventListener('resize', self.onWindowResize);
                 }
-                compact(self.layout, self.verticalCompact);
+                compact(self.layout, self.verticalCompact, self.collisions);
 
                 self.updateHeight();
                 self.$nextTick(function () {
@@ -200,7 +204,7 @@
                         //console.log("### LAYOUT UPDATE!");
                         this.lastLayoutLength = this.layout.length;
                     }
-                    compact(this.layout, this.verticalCompact);
+                    compact(this.layout, this.verticalCompact, this.collisions);
                     this.eventBus.$emit("updateWidth", this.width);
                     this.updateHeight();
                 }
@@ -245,8 +249,8 @@
                 l.x = x;
                 l.y = y;
                 // Move the element to the dragged location.
-                this.layout = moveElement(this.layout, l, x, y, true);
-                compact(this.layout, this.verticalCompact);
+                this.layout = moveElement(this.layout, l, x, y, true, this.collisions);
+                compact(this.layout, this.verticalCompact, this.collisions);
                 // needed because vue can't detect changes on array element properties
                 this.eventBus.$emit("compact");
                 this.updateHeight();
@@ -277,7 +281,7 @@
                 }
                 l.h = h;
                 l.w = w;
-                compact(this.layout, this.verticalCompact);
+                compact(this.layout, this.verticalCompact, this.collisions);
                 this.eventBus.$emit("compact");
                 this.updateHeight();
                 if (eventName === 'resizeend') this.$emit('layout-updated', this.layout);

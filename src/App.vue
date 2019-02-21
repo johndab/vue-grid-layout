@@ -43,6 +43,7 @@
                     :vertical-compact="false"
                     :use-css-transforms="true"
                     :responsive="responsive"
+                    :collisions="false"
             >
                 <grid-item v-for="item in layout" :key="item.i"
                            :x="item.x"
